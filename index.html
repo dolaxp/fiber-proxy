@@ -3,330 +3,719 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>فحص توفر الفايبر - زين</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+<title>FIBER XP — ODB Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #080c14;
+  --bg2: #0d1220;
+  --accent: #00d4ff;
+  --accent2: #0088cc;
+  --green: #00e676;
+  --red: #ff4444;
+  --orange: #ff9800;
+  --card: rgba(255,255,255,0.04);
+  --border: rgba(0,212,255,0.12);
+  --text: #e8f4f8;
+  --muted: #4a6a7a;
+  --font: 'Tajawal', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
 
-  body {
-    font-family: 'Tajawal', sans-serif;
-    background: #0a0f1e;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(0,200,83,0.2);
-    border-radius: 20px;
-    padding: 36px;
-    width: 100%;
-    max-width: 480px;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
-  }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-  .header {
-    text-align: center;
-    margin-bottom: 32px;
-  }
+/* ─── GRID BG ─── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 0;
+}
 
-  .header h1 {
-    font-size: 26px;
-    font-weight: 800;
-    color: #69f0ae;
-    margin-bottom: 6px;
-  }
+/* ─── GLOW ─── */
+.glow-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+.glow-1 { width: 400px; height: 400px; top: -100px; right: -100px; background: rgba(0,212,255,0.06); }
+.glow-2 { width: 300px; height: 300px; bottom: -50px; left: -50px; background: rgba(0,230,118,0.05); }
 
-  .header p { color: #4a6080; font-size: 13px; }
+/* ─── LOGIN PAGE ─── */
+#loginPage {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+  background: var(--bg);
+  transition: opacity 0.5s, transform 0.5s;
+}
 
-  label {
-    display: block;
-    color: #7a9ab5;
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
+#loginPage.hide {
+  opacity: 0;
+  transform: scale(1.05);
+  pointer-events: none;
+}
 
-  /* Provider Tabs */
-  .providers {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 24px;
-  }
+.login-card {
+  width: 100%; max-width: 420px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 44px 40px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,212,255,0.05);
+  position: relative;
+  z-index: 1;
+}
 
-  .provider-btn {
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(0,200,83,0.15);
-    background: rgba(255,255,255,0.03);
-    color: #4a6080;
-    font-family: 'Tajawal', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
+.login-logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
 
-  .provider-btn.active {
-    background: linear-gradient(135deg, #00c853, #00a846);
-    color: white;
-    border-color: transparent;
-    box-shadow: 0 4px 15px rgba(0,200,83,0.3);
-  }
+.login-logo .icon-wrap {
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,136,204,0.1));
+  border: 1px solid rgba(0,212,255,0.3);
+  border-radius: 16px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 28px; margin-bottom: 16px;
+  box-shadow: 0 0 30px rgba(0,212,255,0.15);
+}
 
-  /* Input */
-  .input-wrap { margin-bottom: 24px; position: relative; }
+.login-logo h1 {
+  font-family: var(--mono);
+  font-size: 22px;
+  color: var(--accent);
+  letter-spacing: 2px;
+}
 
-  input[type="text"] {
-    width: 100%;
-    padding: 14px 16px;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(0,200,83,0.2);
-    border-radius: 12px;
-    color: #e0f0e8;
-    font-family: monospace;
-    font-size: 15px;
-    direction: ltr;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+.login-logo p { color: var(--muted); font-size: 13px; margin-top: 4px; }
 
-  input[type="text"]:focus { border-color: rgba(0,200,83,0.6); }
-  input[type="text"]::placeholder { color: #2a4060; }
+.field { margin-bottom: 18px; }
+.field label { display: block; color: var(--muted); font-size: 12px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
 
-  .mask-hint {
-    margin-top: 6px;
-    font-size: 11px;
-    color: #2a5050;
-    direction: ltr;
-  }
+.field input {
+  width: 100%; padding: 13px 16px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(0,212,255,0.15);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: var(--font); font-size: 15px;
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  direction: ltr;
+}
 
-  /* Button */
-  button.check-btn {
-    width: 100%;
-    padding: 16px;
-    border-radius: 12px;
-    border: none;
-    background: linear-gradient(135deg, #00c853, #00a846);
-    color: white;
-    font-family: 'Tajawal', sans-serif;
-    font-size: 16px;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(0,200,83,0.35);
-    transition: all 0.2s;
-  }
+.field input:focus {
+  border-color: rgba(0,212,255,0.5);
+  box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+}
 
-  button.check-btn:disabled {
-    background: rgba(0,200,83,0.2);
-    color: #2a5a3a;
-    box-shadow: none;
-    cursor: not-allowed;
-  }
+.login-btn {
+  width: 100%; padding: 15px;
+  background: linear-gradient(135deg, var(--accent2), #005f8f);
+  border: none; border-radius: 10px;
+  color: white; font-family: var(--font); font-size: 16px; font-weight: 700;
+  cursor: pointer; margin-top: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 6px 20px rgba(0,136,204,0.3);
+}
+.login-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(0,136,204,0.4); }
+.login-btn:active { transform: translateY(0); }
 
-  /* Result */
-  .result {
-    margin-top: 20px;
-    padding: 24px;
-    border-radius: 14px;
-    text-align: center;
-    display: none;
-  }
+.login-error {
+  color: var(--red); font-size: 13px; text-align: center;
+  margin-top: 12px; min-height: 18px;
+  animation: shake 0.4s ease-in-out;
+}
 
-  .result.available {
-    background: rgba(0,200,83,0.1);
-    border: 1px solid rgba(0,200,83,0.4);
-  }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
 
-  .result.unavailable {
-    background: rgba(255,50,50,0.1);
-    border: 1px solid rgba(255,50,50,0.3);
-  }
+/* ─── MAIN APP ─── */
+#mainApp {
+  display: none;
+  min-height: 100vh;
+  position: relative; z-index: 1;
+}
 
-  .result .emoji { font-size: 48px; margin-bottom: 10px; }
+#mainApp.show { display: block; }
 
-  .result .status-text {
-    font-size: 20px;
-    font-weight: 800;
-  }
+/* ─── TOPBAR ─── */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8,12,20,0.8);
+  backdrop-filter: blur(10px);
+  position: sticky; top: 0; z-index: 10;
+}
 
-  .result.available .status-text { color: #69f0ae; }
-  .result.unavailable .status-text { color: #ff6b6b; }
+.topbar-logo {
+  font-family: var(--mono);
+  font-size: 16px; font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 2px;
+  display: flex; align-items: center; gap: 10px;
+}
 
-  .result .odb-label {
-    margin-top: 8px;
-    color: #4a6080;
-    font-size: 12px;
-    direction: ltr;
-  }
+.topbar-logo span { color: var(--muted); font-size: 12px; font-weight: 400; }
 
-  /* Error */
-  .error-box {
-    margin-top: 20px;
-    padding: 16px;
-    border-radius: 12px;
-    background: rgba(255,165,0,0.08);
-    border: 1px solid rgba(255,165,0,0.3);
-    color: #ffa500;
-    font-size: 13px;
-    display: none;
-  }
+.topbar-user {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--muted); font-size: 13px;
+}
 
-  /* Spinner */
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .spinner { display: inline-block; animation: spin 0.8s linear infinite; }
+.user-badge {
+  padding: 5px 14px;
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 20px;
+  color: var(--accent);
+  font-size: 12px; font-weight: 700;
+}
+
+.logout-btn {
+  padding: 6px 14px;
+  background: rgba(255,68,68,0.1);
+  border: 1px solid rgba(255,68,68,0.2);
+  border-radius: 8px;
+  color: #ff6b6b; font-family: var(--font); font-size: 12px;
+  cursor: pointer; transition: all 0.2s;
+}
+.logout-btn:hover { background: rgba(255,68,68,0.2); }
+
+/* ─── CONTENT ─── */
+.content { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+.page-header { text-align: center; margin-bottom: 48px; }
+.page-header h2 {
+  font-size: 32px; font-weight: 800;
+  background: linear-gradient(90deg, var(--accent), #7df9ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+.page-header p { color: var(--muted); font-size: 15px; }
+
+/* ─── PROVIDER SELECTOR ─── */
+.section-label {
+  color: var(--muted); font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+
+.providers {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 10px; margin-bottom: 24px;
+}
+
+.prov-btn {
+  padding: 13px 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--muted); font-family: var(--font); font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; text-align: center;
+}
+
+.prov-btn.active {
+  background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,136,204,0.1));
+  border-color: rgba(0,212,255,0.5);
+  color: var(--accent);
+  box-shadow: 0 4px 15px rgba(0,212,255,0.15);
+}
+
+/* ─── SEARCH BOX ─── */
+.search-wrap {
+  display: flex; gap: 12px; margin-bottom: 12px;
+}
+
+.search-input {
+  flex: 1; padding: 15px 18px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text); font-family: var(--mono); font-size: 15px;
+  direction: ltr; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-input:focus {
+  border-color: rgba(0,212,255,0.5);
+  box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+}
+.search-input::placeholder { color: var(--muted); }
+
+.search-btn {
+  padding: 15px 28px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none; border-radius: 12px;
+  color: #080c14; font-family: var(--font); font-size: 15px; font-weight: 800;
+  cursor: pointer; white-space: nowrap;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(0,212,255,0.3);
+}
+.search-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,212,255,0.4); }
+.search-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.format-hint {
+  color: var(--muted); font-size: 11px;
+  font-family: var(--mono); direction: ltr; margin-bottom: 28px;
+}
+
+/* ─── LOADING ─── */
+.loading-bar {
+  display: none; text-align: center; padding: 20px;
+  color: var(--accent); font-size: 14px;
+}
+.loading-bar.show { display: flex; align-items: center; justify-content: center; gap: 10px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 0.8s linear infinite; }
+
+/* ─── AVAILABILITY BADGE ─── */
+.avail-badge {
+  display: none;
+  padding: 16px 24px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 16px; font-weight: 700;
+  margin-bottom: 24px;
+}
+.avail-badge.available {
+  background: rgba(0,230,118,0.1);
+  border: 1px solid rgba(0,230,118,0.4);
+  color: var(--green);
+}
+.avail-badge.unavailable {
+  background: rgba(255,68,68,0.1);
+  border: 1px solid rgba(255,68,68,0.3);
+  color: var(--red);
+}
+.avail-badge.show { display: block; }
+
+/* ─── RESULTS GRID ─── */
+.results { display: none; }
+.results.show { display: block; }
+
+.results-title {
+  font-size: 13px; font-weight: 700;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 16px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.info-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.info-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-2px); }
+
+.card-icon {
+  width: 36px; height: 36px;
+  background: rgba(0,212,255,0.08);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent); font-size: 15px;
+  margin-bottom: 14px;
+}
+
+.card-label { color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+
+.card-value {
+  font-size: 17px; font-weight: 700; color: var(--text);
+  font-family: var(--mono); word-break: break-all;
+}
+
+.card-value.big { font-size: 28px; color: var(--accent); }
+
+/* Map card special */
+.map-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px;
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.25);
+  border-radius: 8px;
+  color: var(--accent); font-size: 13px; font-weight: 700;
+  text-decoration: none; margin-top: 6px;
+  transition: all 0.2s;
+}
+.map-link:hover { background: rgba(0,212,255,0.2); }
+
+/* ─── DIVIDER ─── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* ─── ERROR ─── */
+.error-msg {
+  display: none; padding: 14px 18px;
+  background: rgba(255,68,68,0.08);
+  border: 1px solid rgba(255,68,68,0.25);
+  border-radius: 10px;
+  color: #ff8080; font-size: 14px; margin-bottom: 20px;
+}
+.error-msg.show { display: block; }
+
+/* ─── FOOTER ─── */
+.footer {
+  text-align: center; padding: 24px;
+  color: var(--muted); font-size: 12px;
+  border-top: 1px solid var(--border);
+  margin-top: 60px;
+}
+
+/* ─── MOBILE ─── */
+@media (max-width: 600px) {
+  .topbar { padding: 14px 16px; }
+  .content { padding: 24px 16px; }
+  .providers { grid-template-columns: repeat(2, 1fr); }
+  .search-wrap { flex-direction: column; }
+  .login-card { padding: 32px 24px; }
+  .cards-grid { grid-template-columns: 1fr 1fr; }
+}
 </style>
 </head>
 <body>
 
-<div class="card">
-  <div class="header">
-    <h1>🔌 فحص توفر الفايبر</h1>
-    <p>Zain · FTTH ODB Availability</p>
+<div class="glow-orb glow-1"></div>
+<div class="glow-orb glow-2"></div>
+
+<!-- ══════════════════ LOGIN PAGE ══════════════════ -->
+<div id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="icon-wrap">🌐</div>
+      <h1>FIBER · XP</h1>
+      <p>ODB Explorer — النظام المتكامل</p>
+    </div>
+
+    <div class="field">
+      <label>اسم المستخدم</label>
+      <input type="text" id="loginUser" placeholder="username" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>كلمة المرور</label>
+      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <div id="loginError" class="login-error"></div>
+    <button class="login-btn" onclick="doLogin()">
+      <i class="fas fa-sign-in-alt"></i> دخول
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════ MAIN APP ══════════════════ -->
+<div id="mainApp">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      🌐 FIBER·XP
+      <span>ODB Explorer</span>
+    </div>
+    <div class="topbar-user">
+      <div class="user-badge" id="userBadge">—</div>
+      <button class="logout-btn" onclick="doLogout()">
+        <i class="fas fa-sign-out-alt"></i> خروج
+      </button>
+    </div>
   </div>
 
-  <label>اختر المزود</label>
-  <div class="providers" id="providers"></div>
+  <!-- Content -->
+  <div class="content">
 
-  <label>رقم صندوق الفايبر (ODB)</label>
-  <div class="input-wrap">
-    <input type="text" id="odbInput" placeholder="أدخل رقم البوكس" />
-    <div class="mask-hint" id="maskHint"></div>
+    <div class="page-header">
+      <h2>🔍 البحث عن لوحة الألياف</h2>
+      <p>أدخل رقم البوكس ODB للحصول على بيانات التغطية والموقع فوراً</p>
+    </div>
+
+    <!-- Provider -->
+    <div class="section-label">اختر المزود</div>
+    <div class="providers" id="providerBtns"></div>
+
+    <!-- Search -->
+    <div class="section-label">رقم البوكس</div>
+    <div class="search-wrap">
+      <input class="search-input" id="odbInput" placeholder="أدخل رقم ODB..." dir="ltr"
+        onkeydown="if(event.key==='Enter') doSearch()">
+      <button class="search-btn" id="searchBtn" onclick="doSearch()">
+        <i class="fas fa-search"></i> بحث
+      </button>
+    </div>
+    <div class="format-hint" id="fmtHint"></div>
+
+    <!-- Loading -->
+    <div class="loading-bar" id="loading">
+      <i class="fas fa-circle-notch spin"></i>
+      <span>جاري البحث في قاعدة البيانات...</span>
+    </div>
+
+    <!-- Error -->
+    <div class="error-msg" id="errorMsg"></div>
+
+    <!-- Availability -->
+    <div class="avail-badge" id="availBadge"></div>
+
+    <!-- Results -->
+    <div class="results" id="resultsSection">
+      <div class="results-title"><i class="fas fa-database"></i> بيانات اللوحة</div>
+      <div class="cards-grid">
+
+        <div class="info-card">
+          <div class="card-icon"><i class="fas fa-tag"></i></div>
+          <div class="card-label">اسم البوكس</div>
+          <div class="card-value" id="rName">—</div>
+        </div>
+
+        <div class="info-card">
+          <div class="card-icon"><i class="fas fa-network-wired"></i></div>
+          <div class="card-label">عدد المنافذ</div>
+          <div class="card-value big" id="rPorts">—</div>
+        </div>
+
+        <div class="info-card">
+          <div class="card-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div class="card-label">المنطقة</div>
+          <div class="card-value" id="rRegion">—</div>
+        </div>
+
+        <div class="info-card">
+          <div class="card-icon"><i class="fas fa-building"></i></div>
+          <div class="card-label">مزود البنية التحتية</div>
+          <div class="card-value" id="rVendor">—</div>
+        </div>
+
+        <div class="info-card">
+          <div class="card-icon"><i class="fas fa-crosshairs"></i></div>
+          <div class="card-label">الإحداثيات</div>
+          <div class="card-value" id="rCoords" style="font-size:13px;">—</div>
+          <a id="rMapLink" href="#" target="_blank" class="map-link" style="display:none;">
+            <i class="fas fa-map-marked-alt"></i> عرض على الخريطة
+          </a>
+        </div>
+
+        <div class="info-card">
+          <div class="card-icon"><i class="fas fa-tachometer-alt"></i></div>
+          <div class="card-label">السرعة المتاحة</div>
+          <div class="card-value big" style="color:var(--green);">1G</div>
+          <div style="color:var(--muted);font-size:11px;margin-top:4px;">ألياف بصرية FTTH</div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
-  <button class="check-btn" onclick="checkAvailability()" id="checkBtn">
-    🔍 فحص التوفر
-  </button>
-
-  <div class="result" id="result">
-    <div class="emoji" id="resultEmoji"></div>
-    <div class="status-text" id="resultText"></div>
-    <div class="odb-label" id="resultOdb"></div>
+  <div class="footer">
+    FIBER·XP &nbsp;·&nbsp; ODB Explorer &nbsp;·&nbsp; 2025
   </div>
 
-  <div class="error-box" id="errorBox"></div>
 </div>
 
 <script>
-// ============================================================
-// ⚠️ غيّر هذا الرابط لرابط الـ Proxy بتاعك على Vercel
-// ============================================================
-const PROXY_URL = "https://fiber-proxy.vercel.app/api/check";
+// ══════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════
+const PROXY_VALIDATE = "https://fiber-proxy.vercel.app/api/check";
+const PROXY_LOOKUP   = "https://location.sa.zain.com/lookup/odb";
+
+const USERS = {
+  "admin":    "admin",
+  "Kapo":     "123123123",
+  "manga":    "123123123",
+  "Abdo1994": "0567014549",
+  "AlFursan": "123123123",
+  "sadek":    "123123123",
+  "3rgany":   "123123123",
+  "taleb":    "123123123",
+  "3asem":    "123123123",
+  "omarxx":   "123123123",
+};
 
 const PROVIDERS = [
-  {
-    name: "STC",
-    id: "9169265135613600146",
-    mask: "XXXXXXXXXXX",
-    prefix: "",
-    placeholder: "AZEZDNU3688"
-  },
-  {
-    name: "Dawiyat",
-    id: "9169265133613600146",
-    mask: "XXXXXXXXXXX",
-    prefix: "ODB:",
-    placeholder: "ODB:XXXXXXXX"
-  },
-  {
-    name: "Mobily",
-    id: "9169272440013609990",
-    mask: "XXX-XXXX-XXXX-XX-XXXX",
-    prefix: "",
-    placeholder: "RUH-SULM-SULM-17-3835"
-  },
-  {
-    name: "TLS [Salam]",
-    id: "9169272442013609990",
-    mask: "XXXXXXXXXXX",
-    prefix: "",
-    placeholder: "XXXXXXXXXXX"
-  }
+  { name: "STC",        id: "9169265135613600146", mask: "XXXXXXXXXXX",           placeholder: "AZEZDNU3688" },
+  { name: "Dawiyat",    id: "9169265133613600146", mask: "XXXXXXXXXXX",           placeholder: "ODB:XXXXXXXX", prefix: "ODB:" },
+  { name: "Mobily",     id: "9169272440013609990", mask: "XXX-XXXX-XXXX-XX-XXXX", placeholder: "RUH-SULM-SULM-17-3835" },
+  { name: "TLS Salam",  id: "9169272442013609990", mask: "XXXXXXXXXXX",           placeholder: "XXXXXXXXXXX" },
 ];
 
 const PRODUCT_ID = "15005001";
-let selectedProvider = PROVIDERS[0];
+let activeProvider = PROVIDERS[0];
 
-// Build provider buttons
-const container = document.getElementById("providers");
-PROVIDERS.forEach((p, i) => {
-  const btn = document.createElement("button");
-  btn.className = "provider-btn" + (i === 0 ? " active" : "");
-  btn.textContent = p.name;
-  btn.onclick = () => selectProvider(p, btn);
-  container.appendChild(btn);
+// ══════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════
+function doLogin() {
+  const u = document.getElementById("loginUser").value.trim();
+  const p = document.getElementById("loginPass").value.trim();
+  const errEl = document.getElementById("loginError");
+
+  if (USERS[u] && USERS[u] === p) {
+    errEl.textContent = "";
+    document.getElementById("loginPage").classList.add("hide");
+    document.getElementById("mainApp").classList.add("show");
+    document.getElementById("userBadge").textContent = u;
+    setTimeout(() => document.getElementById("loginPage").style.display = "none", 500);
+  } else {
+    errEl.textContent = "❌ اسم المستخدم أو كلمة المرور غير صحيحة";
+    errEl.style.animation = "none";
+    requestAnimationFrame(() => errEl.style.animation = "shake 0.4s ease-in-out");
+  }
+}
+
+document.getElementById("loginPass").addEventListener("keydown", e => {
+  if (e.key === "Enter") doLogin();
 });
 
-updateHint();
-
-function selectProvider(p, btn) {
-  selectedProvider = p;
-  document.querySelectorAll(".provider-btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  document.getElementById("odbInput").placeholder = p.placeholder;
-  updateHint();
-  clearResult();
+function doLogout() {
+  document.getElementById("mainApp").classList.remove("show");
+  document.getElementById("loginPage").style.display = "flex";
+  document.getElementById("loginPage").classList.remove("hide");
+  document.getElementById("loginUser").value = "";
+  document.getElementById("loginPass").value = "";
+  resetResults();
 }
 
-function updateHint() {
-  document.getElementById("maskHint").textContent = "Format: " + selectedProvider.mask;
-}
+// ══════════════════════════════════════
+// PROVIDERS
+// ══════════════════════════════════════
+const provWrap = document.getElementById("providerBtns");
+PROVIDERS.forEach((p, i) => {
+  const btn = document.createElement("button");
+  btn.className = "prov-btn" + (i === 0 ? " active" : "");
+  btn.textContent = p.name;
+  btn.onclick = () => {
+    document.querySelectorAll(".prov-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeProvider = p;
+    document.getElementById("odbInput").placeholder = p.placeholder;
+    document.getElementById("fmtHint").textContent = "Format: " + p.mask;
+    resetResults();
+  };
+  provWrap.appendChild(btn);
+});
+document.getElementById("fmtHint").textContent = "Format: " + PROVIDERS[0].mask;
+document.getElementById("odbInput").placeholder = PROVIDERS[0].placeholder;
 
-function clearResult() {
-  document.getElementById("result").style.display = "none";
-  document.getElementById("errorBox").style.display = "none";
-}
-
-async function checkAvailability() {
+// ══════════════════════════════════════
+// SEARCH
+// ══════════════════════════════════════
+async function doSearch() {
   const odbRaw = document.getElementById("odbInput").value.trim();
   if (!odbRaw) return;
 
-  const btn = document.getElementById("checkBtn");
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner">⟳</span> جاري الفحص...';
-  clearResult();
+  resetResults();
+  setLoading(true);
 
-  const odbId = selectedProvider.prefix + odbRaw.replace(selectedProvider.prefix, "");
-
-  const payload = {
-    providerId: selectedProvider.id,
-    odbId: odbId,
-    productId: PRODUCT_ID
-  };
+  const odbId = activeProvider.prefix
+    ? (odbRaw.startsWith(activeProvider.prefix) ? odbRaw : activeProvider.prefix + odbRaw)
+    : odbRaw;
 
   try {
-    const res = await fetch(PROXY_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
+    // Run both requests in parallel
+    const [validateRes, lookupRes] = await Promise.allSettled([
+      fetch(PROXY_VALIDATE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ providerId: activeProvider.id, odbId, productId: PRODUCT_ID })
+      }).then(r => r.json()),
 
-    const data = await res.json();
-    showResult(data.valid, odbId);
+      fetch(`${PROXY_LOOKUP}?odbname=${encodeURIComponent(odbRaw)}`)
+        .then(r => r.json())
+    ]);
+
+    setLoading(false);
+
+    // ── Availability
+    if (validateRes.status === "fulfilled") {
+      showAvailability(validateRes.value.valid, odbId);
+    }
+
+    // ── Details
+    if (lookupRes.status === "fulfilled") {
+      const data = lookupRes.value;
+      const d = Array.isArray(data) ? data[0] : data;
+      if (d) showDetails(d);
+    }
 
   } catch (err) {
-    const errBox = document.getElementById("errorBox");
-    errBox.style.display = "block";
-    errBox.innerHTML = "⚠️ تأكد من إعداد الـ Proxy على Vercel وتحديث رابط <code>PROXY_URL</code> في الكود.";
+    setLoading(false);
+    showError("حدث خطأ أثناء الاتصال. تأكد من صحة رقم البوكس.");
   }
-
-  btn.disabled = false;
-  btn.innerHTML = "🔍 فحص التوفر";
 }
 
-function showResult(valid, odbId) {
-  const box = document.getElementById("result");
-  box.className = "result " + (valid ? "available" : "unavailable");
-  box.style.display = "block";
-  document.getElementById("resultEmoji").textContent = valid ? "✅" : "❌";
-  document.getElementById("resultText").textContent = valid
-    ? "البوكس متاح! يوجد منفذ"
-    : "البوكس ممتلئ - لا يوجد منفذ";
-  document.getElementById("resultOdb").textContent = "ODB: " + odbId + " · " + selectedProvider.name;
+// ══════════════════════════════════════
+// UI HELPERS
+// ══════════════════════════════════════
+function setLoading(on) {
+  document.getElementById("loading").classList.toggle("show", on);
+  document.getElementById("searchBtn").disabled = on;
+}
+
+function showAvailability(valid, odbId) {
+  const el = document.getElementById("availBadge");
+  el.className = "avail-badge show " + (valid ? "available" : "unavailable");
+  el.innerHTML = valid
+    ? `<i class="fas fa-check-circle"></i> البوكس متاح — يوجد منفذ فارغ ✅`
+    : `<i class="fas fa-times-circle"></i> البوكس ممتلئ — لا يوجد منفذ ❌`;
+}
+
+function showDetails(d) {
+  document.getElementById("rName").textContent    = d.name    || "—";
+  document.getElementById("rPorts").textContent   = d.ports !== null ? d.ports : "—";
+  document.getElementById("rRegion").textContent  = d.region  || "—";
+  document.getElementById("rVendor").textContent  = d.vendor  || "—";
+
+  if (d.latitude && d.longitude) {
+    const lat = parseFloat(d.latitude).toFixed(5);
+    const lon = parseFloat(d.longitude).toFixed(5);
+    document.getElementById("rCoords").textContent = `${lat}, ${lon}`;
+    const link = document.getElementById("rMapLink");
+    link.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+    link.style.display = "inline-flex";
+  }
+
+  document.getElementById("resultsSection").classList.add("show");
+}
+
+function showError(msg) {
+  const el = document.getElementById("errorMsg");
+  el.textContent = msg;
+  el.classList.add("show");
+}
+
+function resetResults() {
+  document.getElementById("availBadge").className = "avail-badge";
+  document.getElementById("resultsSection").classList.remove("show");
+  document.getElementById("errorMsg").classList.remove("show");
 }
 </script>
 </body>
