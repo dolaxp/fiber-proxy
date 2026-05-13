@@ -2,27 +2,27 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>فحص توفر الفايبر</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* ─── RESET ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 
 body {
   font-family: 'Tajawal', sans-serif;
   background: #070b14;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
+  min-height: 100dvh;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
-/* ─── ANIMATED BACKGROUND ─── */
+/* ─── BACKGROUND ─── */
 .bg-grid {
-  position: fixed; inset: 0;
+  position: fixed; inset: 0; z-index: 0;
   background-image:
     linear-gradient(rgba(0,200,83,0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0,200,83,0.04) 1px, transparent 1px);
@@ -31,318 +31,397 @@ body {
   animation: gridMove 20s linear infinite;
 }
 @keyframes gridMove {
-  0%   { background-position: 0 0; }
-  100% { background-position: 44px 44px; }
+  from { background-position: 0 0; }
+  to   { background-position: 44px 44px; }
 }
 
 .orb {
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(100px);
-  pointer-events: none;
+  position: fixed; border-radius: 50%;
+  filter: blur(100px); pointer-events: none; z-index: 0;
   animation: orbFloat 8s ease-in-out infinite;
 }
-.orb-1 { width: 500px; height: 500px; top: -150px; right: -100px; background: rgba(0,200,83,0.07); animation-delay: 0s; }
-.orb-2 { width: 350px; height: 350px; bottom: -100px; left: -80px; background: rgba(0,150,255,0.05); animation-delay: 4s; }
-
+.orb-1 { width: clamp(250px,50vw,500px); height: clamp(250px,50vw,500px); top: -10%; right: -5%; background: rgba(0,200,83,0.07); }
+.orb-2 { width: clamp(180px,35vw,350px); height: clamp(180px,35vw,350px); bottom: -5%; left: -5%; background: rgba(0,150,255,0.05); animation-delay: 4s; }
 @keyframes orbFloat {
   0%,100% { transform: translateY(0); }
-  50%      { transform: translateY(-30px); }
+  50%     { transform: translateY(-20px); }
 }
 
-/* ─── PARTICLES ─── */
-.particles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+.particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
 .particle {
-  position: absolute;
-  width: 2px; height: 2px;
-  background: rgba(0,200,83,0.4);
-  border-radius: 50%;
+  position: absolute; border-radius: 50%;
+  background: rgba(0,200,83,0.35);
   animation: particleFly linear infinite;
 }
 @keyframes particleFly {
-  0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
+  0%   { transform: translateY(100vh); opacity: 0; }
   10%  { opacity: 1; }
   90%  { opacity: 1; }
-  100% { transform: translateY(-100px) translateX(40px); opacity: 0; }
+  100% { transform: translateY(-60px) translateX(30px); opacity: 0; }
 }
+
+/* ═══════════════════════════════════
+   LOGIN PAGE
+═══════════════════════════════════ */
+#loginPage {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  padding: clamp(16px, 4vw, 32px);
+  background: #070b14;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+#loginPage.hiding {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+}
+
+.login-card {
+  width: 100%;
+  max-width: min(440px, 100%);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(0,200,83,0.15);
+  border-radius: clamp(16px, 3vw, 24px);
+  padding: clamp(28px, 6vw, 44px) clamp(22px, 5vw, 40px);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+  position: relative; z-index: 1;
+  backdrop-filter: blur(20px);
+  animation: cardIn 0.55s cubic-bezier(0.16,1,0.3,1);
+}
+.login-card::before {
+  content: '';
+  position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,200,83,0.6), transparent);
+}
+
+.login-logo { text-align: center; margin-bottom: clamp(24px, 4vw, 36px); }
+
+.logo-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: clamp(56px, 10vw, 68px); height: clamp(56px, 10vw, 68px);
+  background: linear-gradient(135deg, rgba(0,200,83,0.15), rgba(0,150,255,0.08));
+  border: 1px solid rgba(0,200,83,0.25);
+  border-radius: clamp(14px, 2.5vw, 18px);
+  font-size: clamp(22px, 4vw, 28px);
+  margin-bottom: 14px;
+  animation: logoPulse 3s ease-in-out infinite;
+}
+@keyframes logoPulse {
+  0%,100% { box-shadow: 0 0 20px rgba(0,200,83,0.1); }
+  50%     { box-shadow: 0 0 40px rgba(0,200,83,0.28); }
+}
+
+.login-logo h1 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(18px, 3.5vw, 22px);
+  font-weight: 700; color: #69f0ae; letter-spacing: 1px; margin-bottom: 5px;
+}
+.login-logo p { color: #3a5a6a; font-size: clamp(11px, 2vw, 13px); }
+
+.field { margin-bottom: 16px; }
+.field label {
+  display: block; color: #3a6050;
+  font-size: clamp(10px, 1.8vw, 11px); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;
+}
+.field input {
+  width: 100%;
+  padding: clamp(12px, 2.5vw, 14px) clamp(14px, 3vw, 18px);
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(0,200,83,0.15);
+  border-radius: 12px;
+  color: #b0d8c0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(13px, 2.5vw, 15px);
+  direction: ltr; outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  -webkit-appearance: none;
+}
+.field input:focus {
+  border-color: rgba(0,200,83,0.5);
+  box-shadow: 0 0 0 3px rgba(0,200,83,0.07);
+}
+.field input::placeholder { color: #1a3a2a; }
+
+.login-error {
+  min-height: 20px; margin-bottom: 8px;
+  color: #ff6b6b; font-size: clamp(11px, 2vw, 13px);
+  text-align: center;
+  animation: shake 0.4s ease-in-out;
+}
+
+.login-btn {
+  width: 100%;
+  padding: clamp(13px, 2.8vw, 16px);
+  border-radius: 12px; border: none;
+  background: linear-gradient(135deg, #00c853, #00a040);
+  color: #fff;
+  font-family: 'Tajawal', sans-serif;
+  font-size: clamp(14px, 2.8vw, 16px); font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 22px rgba(0,200,83,0.35);
+  transition: all 0.25s; position: relative; overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+.login-btn::before {
+  content: ''; position: absolute; top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  transition: left 0.5s;
+}
+.login-btn:hover::before { left: 100%; }
+.login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,200,83,0.45); }
+.login-btn:active { transform: scale(0.98); }
+
+/* ═══════════════════════════════════
+   MAIN APP
+═══════════════════════════════════ */
+#mainApp {
+  display: none;
+  min-height: 100vh; min-height: 100dvh;
+  align-items: center; justify-content: center;
+  padding: clamp(16px, 4vw, 32px);
+}
+#mainApp.show { display: flex; }
 
 /* ─── CARD ─── */
 .card {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(0,200,83,0.15);
-  border-radius: 24px;
-  padding: 40px 36px;
+  border-radius: clamp(16px, 3vw, 24px);
+  padding: clamp(24px, 5vw, 40px) clamp(20px, 4.5vw, 36px);
   width: 100%;
-  max-width: 500px;
-  box-shadow:
-    0 30px 80px rgba(0,0,0,0.6),
-    0 0 0 1px rgba(0,200,83,0.05),
-    inset 0 1px 0 rgba(255,255,255,0.05);
-  position: relative;
-  z-index: 1;
+  max-width: min(500px, 100%);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,200,83,0.04), inset 0 1px 0 rgba(255,255,255,0.05);
+  position: relative; z-index: 1;
   backdrop-filter: blur(20px);
-  animation: cardIn 0.6s cubic-bezier(0.16,1,0.3,1);
+  animation: cardIn 0.55s cubic-bezier(0.16,1,0.3,1);
 }
 @keyframes cardIn {
-  from { opacity: 0; transform: translateY(30px) scale(0.97); }
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-
-/* Top glow line */
 .card::before {
   content: '';
-  position: absolute;
-  top: 0; left: 10%; right: 10%;
-  height: 1px;
+  position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
   background: linear-gradient(90deg, transparent, rgba(0,200,83,0.6), transparent);
-  border-radius: 50%;
 }
 
 /* ─── HEADER ─── */
-.header { text-align: center; margin-bottom: 36px; }
+.header { text-align: center; margin-bottom: clamp(24px, 4vw, 36px); }
 
 .logo-wrap {
-  display: inline-flex;
-  align-items: center; justify-content: center;
-  width: 68px; height: 68px;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: clamp(56px, 10vw, 68px); height: clamp(56px, 10vw, 68px);
   background: linear-gradient(135deg, rgba(0,200,83,0.15), rgba(0,150,255,0.08));
   border: 1px solid rgba(0,200,83,0.25);
-  border-radius: 18px;
-  margin-bottom: 18px;
-  font-size: 28px;
-  box-shadow: 0 0 30px rgba(0,200,83,0.15), inset 0 1px 0 rgba(255,255,255,0.1);
+  border-radius: clamp(14px, 2.5vw, 18px);
+  margin-bottom: 14px;
+  font-size: clamp(22px, 4vw, 28px);
   animation: logoPulse 3s ease-in-out infinite;
 }
-@keyframes logoPulse {
-  0%,100% { box-shadow: 0 0 20px rgba(0,200,83,0.15); }
-  50%     { box-shadow: 0 0 40px rgba(0,200,83,0.3); }
-}
-
 .header h1 {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 22px; font-weight: 700;
-  color: #69f0ae;
-  letter-spacing: 1px;
-  margin-bottom: 6px;
+  font-size: clamp(17px, 3.5vw, 22px);
+  font-weight: 700; color: #69f0ae; letter-spacing: 1px; margin-bottom: 5px;
 }
+.header p { color: #3a5a6a; font-size: clamp(11px, 2vw, 13px); }
 
-.header p { color: #3a5a6a; font-size: 13px; letter-spacing: 0.5px; }
-
-/* ─── SECTION LABEL ─── */
+/* ─── SEC LABEL ─── */
 .sec-label {
-  display: block;
-  color: #3a6050;
-  font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 1.5px;
-  margin-bottom: 10px;
+  display: block; color: #3a6050;
+  font-size: clamp(9px, 1.6vw, 11px); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;
 }
 
 /* ─── PROVIDERS ─── */
 .providers {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 26px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(6px, 1.5vw, 10px);
+  margin-bottom: clamp(18px, 3.5vw, 26px);
 }
 
 .provider-btn {
-  padding: 13px 10px;
-  border-radius: 12px;
+  padding: clamp(10px, 2vw, 13px) clamp(6px, 1.5vw, 10px);
+  border-radius: 10px;
   border: 1px solid rgba(0,200,83,0.1);
   background: rgba(255,255,255,0.02);
   color: #3a5a6a;
   font-family: 'Tajawal', sans-serif;
-  font-size: 13px; font-weight: 700;
-  cursor: pointer;
-  transition: all 0.25s;
+  font-size: clamp(11px, 2vw, 13px); font-weight: 700;
+  cursor: pointer; transition: all 0.25s;
   position: relative; overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
 }
-
-.provider-btn::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(0,200,83,0.08), transparent);
-  opacity: 0; transition: opacity 0.25s;
-}
-
-.provider-btn:hover:not(:disabled)::after { opacity: 1; }
 .provider-btn:hover:not(:disabled) {
-  border-color: rgba(0,200,83,0.3);
-  color: #5ad090;
-  transform: translateY(-1px);
+  border-color: rgba(0,200,83,0.3); color: #5ad090;
 }
-
 .provider-btn.active {
   background: linear-gradient(135deg, rgba(0,200,83,0.18), rgba(0,180,70,0.1));
-  border-color: rgba(0,200,83,0.5);
-  color: #69f0ae;
-  box-shadow: 0 4px 20px rgba(0,200,83,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
+  border-color: rgba(0,200,83,0.5); color: #69f0ae;
+  box-shadow: 0 4px 18px rgba(0,200,83,0.2);
 }
-
-/* DISABLED - Dawiyat */
 .provider-btn.disabled-prov {
-  opacity: 0.3;
-  cursor: not-allowed;
-  filter: grayscale(1);
+  opacity: 0.28; cursor: not-allowed; filter: grayscale(1);
 }
-.provider-btn.disabled-prov::before {
+.provider-btn.disabled-prov::after {
   content: '🔒';
-  font-size: 10px;
-  position: absolute; top: 4px; left: 6px;
+  font-size: 9px;
+  position: absolute; top: 3px; left: 5px;
 }
 
 /* ─── INPUT ─── */
-.input-wrap { margin-bottom: 10px; }
-
 .odb-input {
   width: 100%;
-  padding: 15px 18px;
+  padding: clamp(12px, 2.5vw, 15px) clamp(14px, 3vw, 18px);
   background: rgba(0,0,0,0.5);
   border: 1px solid rgba(0,200,83,0.15);
-  border-radius: 13px;
+  border-radius: 12px;
   color: #b0d8c0;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 15px;
-  direction: ltr;
-  outline: none;
-  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  font-size: clamp(13px, 2.5vw, 15px);
+  direction: ltr; outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  -webkit-appearance: none;
+  margin-bottom: 6px;
 }
 .odb-input:focus {
   border-color: rgba(0,200,83,0.5);
-  background: rgba(0,0,0,0.7);
-  box-shadow: 0 0 0 3px rgba(0,200,83,0.07), 0 0 20px rgba(0,200,83,0.05);
+  box-shadow: 0 0 0 3px rgba(0,200,83,0.07);
 }
 .odb-input::placeholder { color: #1a3a2a; }
 
 .mask-hint {
-  margin-top: 6px; margin-bottom: 22px;
-  font-size: 11px; color: #1e4030;
+  font-size: clamp(10px, 1.8vw, 11px); color: #1e4030;
   font-family: 'JetBrains Mono', monospace;
-  direction: ltr;
-  transition: color 0.2s;
+  direction: ltr; margin-bottom: clamp(16px, 3.5vw, 22px);
 }
 
 /* ─── BUTTON ─── */
 .check-btn {
-  width: 100%; padding: 17px;
-  border-radius: 13px; border: none;
+  width: 100%;
+  padding: clamp(14px, 2.8vw, 17px);
+  border-radius: 12px; border: none;
   background: linear-gradient(135deg, #00c853, #00a040);
   color: #fff;
   font-family: 'Tajawal', sans-serif;
-  font-size: 17px; font-weight: 800;
+  font-size: clamp(14px, 2.8vw, 17px); font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 8px 25px rgba(0,200,83,0.35);
-  transition: all 0.25s;
-  position: relative; overflow: hidden;
-  letter-spacing: 0.5px;
+  box-shadow: 0 6px 22px rgba(0,200,83,0.35);
+  transition: all 0.25s; position: relative; overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 .check-btn::before {
-  content: '';
-  position: absolute; top: 0; left: -100%;
+  content: ''; position: absolute; top: 0; left: -100%;
   width: 100%; height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
   transition: left 0.5s;
 }
 .check-btn:hover::before { left: 100%; }
-.check-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,200,83,0.45); }
-.check-btn:active { transform: translateY(0); }
+.check-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,200,83,0.45); }
+.check-btn:active { transform: scale(0.98); }
 .check-btn:disabled {
-  background: rgba(0,200,83,0.15);
-  color: #1a4a2a;
+  background: rgba(0,200,83,0.12); color: #1a4a2a;
   box-shadow: none; cursor: not-allowed; transform: none;
 }
 
 /* ─── RESULT ─── */
 .result {
-  margin-top: 22px;
-  padding: 26px;
-  border-radius: 16px;
-  text-align: center;
-  display: none;
+  margin-top: clamp(16px, 3vw, 22px);
+  padding: clamp(18px, 4vw, 26px);
+  border-radius: 14px; text-align: center; display: none;
   animation: resultIn 0.4s cubic-bezier(0.16,1,0.3,1);
 }
 @keyframes resultIn {
   from { opacity: 0; transform: translateY(10px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 1; transform: none; }
 }
+.result.available  { background: rgba(0,200,83,0.08);  border: 1px solid rgba(0,200,83,0.35); }
+.result.unavailable{ background: rgba(255,50,50,0.08);  border: 1px solid rgba(255,50,50,0.3); }
 
-.result.available {
-  background: linear-gradient(135deg, rgba(0,200,83,0.1), rgba(0,200,83,0.05));
-  border: 1px solid rgba(0,200,83,0.35);
-  box-shadow: 0 0 30px rgba(0,200,83,0.08);
-}
-.result.unavailable {
-  background: linear-gradient(135deg, rgba(255,50,50,0.1), rgba(255,50,50,0.04));
-  border: 1px solid rgba(255,50,50,0.3);
-  box-shadow: 0 0 30px rgba(255,50,50,0.06);
-}
-
-.result-emoji { font-size: 52px; margin-bottom: 12px; display: block; }
-
-.result-text { font-size: 21px; font-weight: 800; margin-bottom: 8px; }
-.result.available  .result-text { color: #69f0ae; }
+.result-emoji { font-size: clamp(38px, 8vw, 52px); display: block; margin-bottom: 10px; }
+.result-text  { font-size: clamp(16px, 3.5vw, 21px); font-weight: 800; margin-bottom: 8px; }
+.result.available   .result-text { color: #69f0ae; }
 .result.unavailable .result-text { color: #ff6b6b; }
-
 .result-odb {
-  color: #2a5040;
-  font-size: 12px;
-  font-family: 'JetBrains Mono', monospace;
-  direction: ltr;
+  color: #2a5040; font-size: clamp(10px, 2vw, 12px);
+  font-family: 'JetBrains Mono', monospace; direction: ltr;
 }
 
 /* ─── DIVIDER ─── */
-.divider {
-  border: none;
-  border-top: 1px solid rgba(0,200,83,0.08);
-  margin: 28px 0;
-}
+.divider { border: none; border-top: 1px solid rgba(0,200,83,0.08); margin: clamp(20px, 4vw, 28px) 0; }
 
-/* ─── LOCATION BUTTON ─── */
+/* ─── LOCATION BTN ─── */
 .location-btn {
-  display: flex;
-  align-items: center; justify-content: center;
-  gap: 10px;
-  width: 100%; padding: 15px;
-  border-radius: 13px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: clamp(13px, 2.8vw, 15px);
+  border-radius: 12px;
   border: 1px solid rgba(0,150,255,0.2);
   background: rgba(0,150,255,0.05);
   color: #60b0e0;
   font-family: 'Tajawal', sans-serif;
-  font-size: 15px; font-weight: 700;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.25s;
-  position: relative; overflow: hidden;
+  font-size: clamp(13px, 2.6vw, 15px); font-weight: 700;
+  text-decoration: none; cursor: pointer;
+  transition: all 0.25s; position: relative; overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 .location-btn::before {
-  content: '';
-  position: absolute; top: 0; left: -100%;
+  content: ''; position: absolute; top: 0; left: -100%;
   width: 100%; height: 100%;
   background: linear-gradient(90deg, transparent, rgba(0,150,255,0.08), transparent);
   transition: left 0.5s;
 }
 .location-btn:hover::before { left: 100%; }
 .location-btn:hover {
-  border-color: rgba(0,150,255,0.45);
-  background: rgba(0,150,255,0.1);
-  color: #80d0ff;
-  transform: translateY(-1px);
+  border-color: rgba(0,150,255,0.4); background: rgba(0,150,255,0.1);
+  color: #80d0ff; transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(0,150,255,0.15);
 }
-.location-btn .pin-icon { font-size: 18px; animation: pinBounce 2s ease-in-out infinite; }
+.location-btn:active { transform: scale(0.98); }
+.pin-icon { font-size: clamp(15px, 3vw, 18px); animation: pinBounce 2s ease-in-out infinite; }
 @keyframes pinBounce {
   0%,100% { transform: translateY(0); }
   50%     { transform: translateY(-4px); }
 }
 
-/* ─── SPINNER ─── */
+/* ─── MISC ─── */
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25%     { transform: translateX(-5px); }
+  75%     { transform: translateX(5px); }
+}
 @keyframes spin { to { transform: rotate(360deg); } }
-.spinner { display: inline-block; animation: spin 0.7s linear infinite; margin-left: 6px; }
+.spinner { display: inline-block; animation: spin 0.7s linear infinite; margin-right: 6px; }
 
-/* ─── MOBILE ─── */
-@media (max-width: 480px) {
-  .card { padding: 28px 20px; }
-  .header h1 { font-size: 18px; }
+/* ════════════════
+   RESPONSIVE
+════════════════ */
+
+/* ── Small mobile (≤360px) ── */
+@media (max-width: 360px) {
+  .providers { grid-template-columns: repeat(2, 1fr); }
+  .provider-btn { font-size: 12px; padding: 10px 6px; }
+}
+
+/* ── Tablet / large screens ── */
+@media (min-width: 768px) {
+  #mainApp { padding: 40px; }
+  .card { padding: 44px 40px; }
+  .providers { gap: 10px; }
+}
+
+/* ── Desktop (≥1200px) ── */
+@media (min-width: 1200px) {
+  .card { max-width: 520px; }
+}
+
+/* ── Touch devices: bigger tap targets ── */
+@media (hover: none) {
+  .check-btn, .login-btn { padding-top: 16px; padding-bottom: 16px; }
+  .provider-btn { padding-top: 14px; padding-bottom: 14px; }
+  .location-btn { padding-top: 16px; padding-bottom: 16px; }
 }
 </style>
 </head>
@@ -353,66 +432,144 @@ body {
 <div class="orb orb-2"></div>
 <div class="particles" id="particles"></div>
 
-<div class="card">
+<!-- ══════════ LOGIN ══════════ -->
+<div id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">🌐</div>
+      <h1>FIBER · XP</h1>
+      <p>ODB Availability Checker</p>
+    </div>
 
-  <div class="header">
-    <div class="logo-wrap">🌐</div>
-    <h1>FIBER · XP</h1>
-    <p>ODB Availability Checker</p>
+    <div class="field">
+      <label>اسم المستخدم</label>
+      <input type="text" id="loginUser" placeholder="username" autocomplete="off"
+        onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <div class="field">
+      <label>كلمة المرور</label>
+      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="off"
+        onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+
+    <div class="login-error" id="loginError"></div>
+
+    <button class="login-btn" onclick="doLogin()">دخول</button>
   </div>
+</div>
 
-  <span class="sec-label">اختر المزود</span>
-  <div class="providers" id="providers"></div>
+<!-- ══════════ MAIN ══════════ -->
+<div id="mainApp">
+  <div class="card">
 
-  <span class="sec-label">رقم البوكس</span>
-  <div class="input-wrap">
+    <div class="header">
+      <div class="logo-wrap">🌐</div>
+      <h1>FIBER · XP</h1>
+      <p>ODB Availability Checker</p>
+    </div>
+
+    <span class="sec-label">اختر المزود</span>
+    <div class="providers" id="providers"></div>
+
+    <span class="sec-label">رقم البوكس</span>
     <input class="odb-input" type="text" id="odbInput" placeholder="أدخل رقم ODB..."
       onkeydown="if(event.key==='Enter') checkAvailability()">
+    <div class="mask-hint" id="maskHint"></div>
+
+    <button class="check-btn" onclick="checkAvailability()" id="checkBtn">
+      🔍 فحص التوفر
+    </button>
+
+    <div class="result" id="result">
+      <span class="result-emoji" id="resultEmoji"></span>
+      <div class="result-text"  id="resultText"></div>
+      <div class="result-odb"   id="resultOdb"></div>
+    </div>
+
+    <hr class="divider">
+
+    <a href="" class="location-btn">
+      <span class="pin-icon">📍</span>
+      اضغط هنا لمعرفة مكان البوكس
+    </a>
+
   </div>
-  <div class="mask-hint" id="maskHint"></div>
-
-  <button class="check-btn" onclick="checkAvailability()" id="checkBtn">
-    🔍 فحص التوفر
-  </button>
-
-  <div class="result" id="result">
-    <span class="result-emoji" id="resultEmoji"></span>
-    <div class="result-text"  id="resultText"></div>
-    <div class="result-odb"   id="resultOdb"></div>
-  </div>
-
-  <hr class="divider">
-
-  <a href="" class="location-btn" id="locationBtn">
-    <span class="pin-icon">📍</span>
-    اضغط هنا لمعرفة مكان البوكس
-  </a>
-
 </div>
 
 <script>
-const PROXY_URL = "https://fiber-proxy.vercel.app/api/check";
+/* ════════════════════════════════
+   CONFIG
+════════════════════════════════ */
+const PROXY_URL  = "https://fiber-proxy.vercel.app/api/check";
 const PRODUCT_ID = "15005001";
 
+const USERS = {
+  "admin":    "admin",
+  "Kapo":     "123123123",
+  "manga":    "123123123",
+  "Abdo1994": "0567014549",
+  "AlFursan": "123123123",
+  "sadek":    "123123123",
+  "3rgany":   "123123123",
+  "taleb":    "123123123",
+  "3asem":    "123123123",
+  "omarxx":   "123123123",
+};
+
 const PROVIDERS = [
-  { name: "STC",        id: "9169265135613600146", mask: "XXXXXXXXXXX",           placeholder: "AZEZDNU3688",         prefix: "",     disabled: false },
-  { name: "Dawiyat",    id: "9169265133613600146", mask: "XXXXXXXXXXX",           placeholder: "غير متاح حالياً",     prefix: "ODB:", disabled: true  },
-  { name: "Mobily",     id: "9169272440013609990", mask: "XXX-XXXX-XXXX-XX-XXXX", placeholder: "RUH-SULM-SULM-17-3835", prefix: "",   disabled: false },
-  { name: "TLS [Salam]",id: "9169272442013609990", mask: "XXXXXXXXXXX",           placeholder: "XXXXXXXXXXX",         prefix: "",     disabled: false },
+  { name: "STC",         id: "9169265135613600146", mask: "XXXXXXXXXXX",           placeholder: "AZEZDNU3688",          prefix: "",     disabled: false },
+  { name: "Dawiyat",     id: "9169265133613600146", mask: "XXXXXXXXXXX",           placeholder: "غير متاح حالياً",      prefix: "ODB:", disabled: true  },
+  { name: "Mobily",      id: "9169272440013609990", mask: "XXX-XXXX-XXXX-XX-XXXX", placeholder: "RUH-SULM-SULM-17-3835", prefix: "",    disabled: false },
+  { name: "TLS [Salam]", id: "9169272442013609990", mask: "XXXXXXXXXXX",           placeholder: "XXXXXXXXXXX",          prefix: "",     disabled: false },
 ];
 
 let selectedProvider = PROVIDERS[0];
 
-// ── Build provider buttons ──
-const container = document.getElementById("providers");
+/* ════════════════════════════════
+   LOGIN — always show on load
+════════════════════════════════ */
+function showLogin() {
+  const lp = document.getElementById("loginPage");
+  const ma = document.getElementById("mainApp");
+  lp.style.display  = "flex";
+  lp.classList.remove("hiding");
+  ma.classList.remove("show");
+  document.getElementById("loginUser").value = "";
+  document.getElementById("loginPass").value = "";
+  document.getElementById("loginError").textContent = "";
+  clearResult();
+  setTimeout(() => document.getElementById("loginUser").focus(), 100);
+}
+
+function doLogin() {
+  const u = document.getElementById("loginUser").value.trim();
+  const p = document.getElementById("loginPass").value;
+  const err = document.getElementById("loginError");
+  err.textContent = "";
+
+  if (USERS[u] && USERS[u] === p) {
+    const lp = document.getElementById("loginPage");
+    lp.classList.add("hiding");
+    document.getElementById("mainApp").classList.add("show");
+    setTimeout(() => lp.style.display = "none", 460);
+  } else {
+    err.style.animation = "none";
+    requestAnimationFrame(() => { err.style.animation = ""; err.textContent = "❌ اسم المستخدم أو كلمة المرور غير صحيحة"; });
+  }
+}
+
+// Always show login on page load or browser back/forward
+window.addEventListener("pageshow", () => showLogin());
+
+/* ════════════════════════════════
+   PROVIDERS
+════════════════════════════════ */
+const provContainer = document.getElementById("providers");
 PROVIDERS.forEach((p, i) => {
   const btn = document.createElement("button");
-  btn.className = "provider-btn"
-    + (i === 0 ? " active" : "")
-    + (p.disabled ? " disabled-prov" : "");
+  btn.className = "provider-btn" + (i === 0 ? " active" : "") + (p.disabled ? " disabled-prov" : "");
   btn.textContent = p.name;
   btn.disabled = p.disabled;
-
   if (!p.disabled) {
     btn.onclick = () => {
       document.querySelectorAll(".provider-btn").forEach(b => b.classList.remove("active"));
@@ -423,20 +580,20 @@ PROVIDERS.forEach((p, i) => {
       clearResult();
     };
   }
-  container.appendChild(btn);
+  provContainer.appendChild(btn);
 });
-
-// Init hint
 document.getElementById("maskHint").textContent = "Format: " + PROVIDERS[0].mask;
 
-// ── Check ──
+/* ════════════════════════════════
+   CHECK
+════════════════════════════════ */
 async function checkAvailability() {
   const odbRaw = document.getElementById("odbInput").value.trim();
   if (!odbRaw) return;
 
   const btn = document.getElementById("checkBtn");
   btn.disabled = true;
-  btn.innerHTML = 'جاري الفحص... <span class="spinner">⟳</span>';
+  btn.innerHTML = '<span class="spinner">⟳</span> جاري الفحص...';
   clearResult();
 
   const odbId = selectedProvider.prefix
@@ -461,41 +618,34 @@ async function checkAvailability() {
 
 function showResult(valid, odbId) {
   const box = document.getElementById("result");
-
   if (valid === null) {
-    box.className = "result unavailable";
-    box.style.display = "block";
+    box.className = "result unavailable"; box.style.display = "block";
     document.getElementById("resultEmoji").textContent = "⚠️";
     document.getElementById("resultText").textContent  = "تعذّر الاتصال، حاول مجدداً";
     document.getElementById("resultOdb").textContent   = "";
     return;
   }
-
   box.className = "result " + (valid ? "available" : "unavailable");
   box.style.display = "block";
   document.getElementById("resultEmoji").textContent = valid ? "✅" : "❌";
-  document.getElementById("resultText").textContent  = valid
-    ? "البوكس متاح — يوجد منفذ فارغ"
-    : "البوكس ممتلئ — لا يوجد منفذ";
+  document.getElementById("resultText").textContent  = valid ? "البوكس متاح — يوجد منفذ فارغ" : "البوكس ممتلئ — لا يوجد منفذ";
   document.getElementById("resultOdb").textContent   = odbId + " · " + selectedProvider.name;
 }
 
 function clearResult() {
   const box = document.getElementById("result");
-  box.style.display = "none";
-  box.className = "result";
+  box.style.display = "none"; box.className = "result";
 }
 
-// ── Particles ──
+/* ════════════════════════════════
+   PARTICLES
+════════════════════════════════ */
 const pWrap = document.getElementById("particles");
-for (let i = 0; i < 18; i++) {
+for (let i = 0; i < 16; i++) {
   const p = document.createElement("div");
   p.className = "particle";
-  p.style.left = Math.random() * 100 + "vw";
-  p.style.animationDuration = (8 + Math.random() * 12) + "s";
-  p.style.animationDelay    = (Math.random() * 15) + "s";
-  p.style.width = p.style.height = (Math.random() > 0.5 ? "2px" : "3px");
-  p.style.opacity = 0.3 + Math.random() * 0.4;
+  const size = (Math.random() > 0.5 ? 2 : 3) + "px";
+  p.style.cssText = `left:${Math.random()*100}vw;width:${size};height:${size};opacity:${0.2+Math.random()*0.35};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*16}s`;
   pWrap.appendChild(p);
 }
 </script>
