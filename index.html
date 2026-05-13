@@ -3,719 +3,500 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FIBER XP — ODB Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<title>فحص توفر الفايبر</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #080c14;
-  --bg2: #0d1220;
-  --accent: #00d4ff;
-  --accent2: #0088cc;
-  --green: #00e676;
-  --red: #ff4444;
-  --orange: #ff9800;
-  --card: rgba(255,255,255,0.04);
-  --border: rgba(0,212,255,0.12);
-  --text: #e8f4f8;
-  --muted: #4a6a7a;
-  --font: 'Tajawal', sans-serif;
-  --mono: 'JetBrains Mono', monospace;
-}
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: var(--font);
-  background: var(--bg);
-  color: var(--text);
+  font-family: 'Tajawal', sans-serif;
+  background: #070b14;
   min-height: 100vh;
-  overflow-x: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
 }
 
-/* ─── GRID BG ─── */
-body::before {
-  content: '';
+/* ─── ANIMATED BACKGROUND ─── */
+.bg-grid {
   position: fixed; inset: 0;
   background-image:
-    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
-  background-size: 50px 50px;
+    linear-gradient(rgba(0,200,83,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,83,0.04) 1px, transparent 1px);
+  background-size: 44px 44px;
   pointer-events: none;
-  z-index: 0;
+  animation: gridMove 20s linear infinite;
+}
+@keyframes gridMove {
+  0%   { background-position: 0 0; }
+  100% { background-position: 44px 44px; }
 }
 
-/* ─── GLOW ─── */
-.glow-orb {
+.orb {
   position: fixed;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(100px);
   pointer-events: none;
-  z-index: 0;
+  animation: orbFloat 8s ease-in-out infinite;
 }
-.glow-1 { width: 400px; height: 400px; top: -100px; right: -100px; background: rgba(0,212,255,0.06); }
-.glow-2 { width: 300px; height: 300px; bottom: -50px; left: -50px; background: rgba(0,230,118,0.05); }
+.orb-1 { width: 500px; height: 500px; top: -150px; right: -100px; background: rgba(0,200,83,0.07); animation-delay: 0s; }
+.orb-2 { width: 350px; height: 350px; bottom: -100px; left: -80px; background: rgba(0,150,255,0.05); animation-delay: 4s; }
 
-/* ─── LOGIN PAGE ─── */
-#loginPage {
-  position: fixed; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 100;
-  background: var(--bg);
-  transition: opacity 0.5s, transform 0.5s;
+@keyframes orbFloat {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-30px); }
 }
 
-#loginPage.hide {
-  opacity: 0;
-  transform: scale(1.05);
-  pointer-events: none;
+/* ─── PARTICLES ─── */
+.particles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+.particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: rgba(0,200,83,0.4);
+  border-radius: 50%;
+  animation: particleFly linear infinite;
+}
+@keyframes particleFly {
+  0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(-100px) translateX(40px); opacity: 0; }
 }
 
-.login-card {
-  width: 100%; max-width: 420px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 44px 40px;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,212,255,0.05);
+/* ─── CARD ─── */
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(0,200,83,0.15);
+  border-radius: 24px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.6),
+    0 0 0 1px rgba(0,200,83,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.05);
   position: relative;
   z-index: 1;
+  backdrop-filter: blur(20px);
+  animation: cardIn 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(30px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.login-logo {
-  text-align: center;
-  margin-bottom: 32px;
+/* Top glow line */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,200,83,0.6), transparent);
+  border-radius: 50%;
 }
 
-.login-logo .icon-wrap {
-  width: 64px; height: 64px;
-  background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,136,204,0.1));
-  border: 1px solid rgba(0,212,255,0.3);
-  border-radius: 16px;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 28px; margin-bottom: 16px;
-  box-shadow: 0 0 30px rgba(0,212,255,0.15);
+/* ─── HEADER ─── */
+.header { text-align: center; margin-bottom: 36px; }
+
+.logo-wrap {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 68px; height: 68px;
+  background: linear-gradient(135deg, rgba(0,200,83,0.15), rgba(0,150,255,0.08));
+  border: 1px solid rgba(0,200,83,0.25);
+  border-radius: 18px;
+  margin-bottom: 18px;
+  font-size: 28px;
+  box-shadow: 0 0 30px rgba(0,200,83,0.15), inset 0 1px 0 rgba(255,255,255,0.1);
+  animation: logoPulse 3s ease-in-out infinite;
+}
+@keyframes logoPulse {
+  0%,100% { box-shadow: 0 0 20px rgba(0,200,83,0.15); }
+  50%     { box-shadow: 0 0 40px rgba(0,200,83,0.3); }
 }
 
-.login-logo h1 {
-  font-family: var(--mono);
-  font-size: 22px;
-  color: var(--accent);
-  letter-spacing: 2px;
+.header h1 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px; font-weight: 700;
+  color: #69f0ae;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
 }
 
-.login-logo p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.header p { color: #3a5a6a; font-size: 13px; letter-spacing: 0.5px; }
 
-.field { margin-bottom: 18px; }
-.field label { display: block; color: var(--muted); font-size: 12px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-
-.field input {
-  width: 100%; padding: 13px 16px;
-  background: rgba(0,0,0,0.4);
-  border: 1px solid rgba(0,212,255,0.15);
-  border-radius: 10px;
-  color: var(--text);
-  font-family: var(--font); font-size: 15px;
-  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-  direction: ltr;
-}
-
-.field input:focus {
-  border-color: rgba(0,212,255,0.5);
-  box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
-}
-
-.login-btn {
-  width: 100%; padding: 15px;
-  background: linear-gradient(135deg, var(--accent2), #005f8f);
-  border: none; border-radius: 10px;
-  color: white; font-family: var(--font); font-size: 16px; font-weight: 700;
-  cursor: pointer; margin-top: 8px;
-  transition: all 0.2s;
-  box-shadow: 0 6px 20px rgba(0,136,204,0.3);
-}
-.login-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(0,136,204,0.4); }
-.login-btn:active { transform: translateY(0); }
-
-.login-error {
-  color: var(--red); font-size: 13px; text-align: center;
-  margin-top: 12px; min-height: 18px;
-  animation: shake 0.4s ease-in-out;
-}
-
-@keyframes shake {
-  0%,100% { transform: translateX(0); }
-  25% { transform: translateX(-6px); }
-  75% { transform: translateX(6px); }
-}
-
-/* ─── MAIN APP ─── */
-#mainApp {
-  display: none;
-  min-height: 100vh;
-  position: relative; z-index: 1;
-}
-
-#mainApp.show { display: block; }
-
-/* ─── TOPBAR ─── */
-.topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 32px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(8,12,20,0.8);
-  backdrop-filter: blur(10px);
-  position: sticky; top: 0; z-index: 10;
-}
-
-.topbar-logo {
-  font-family: var(--mono);
-  font-size: 16px; font-weight: 700;
-  color: var(--accent);
-  letter-spacing: 2px;
-  display: flex; align-items: center; gap: 10px;
-}
-
-.topbar-logo span { color: var(--muted); font-size: 12px; font-weight: 400; }
-
-.topbar-user {
-  display: flex; align-items: center; gap: 10px;
-  color: var(--muted); font-size: 13px;
-}
-
-.user-badge {
-  padding: 5px 14px;
-  background: rgba(0,212,255,0.08);
-  border: 1px solid rgba(0,212,255,0.2);
-  border-radius: 20px;
-  color: var(--accent);
-  font-size: 12px; font-weight: 700;
-}
-
-.logout-btn {
-  padding: 6px 14px;
-  background: rgba(255,68,68,0.1);
-  border: 1px solid rgba(255,68,68,0.2);
-  border-radius: 8px;
-  color: #ff6b6b; font-family: var(--font); font-size: 12px;
-  cursor: pointer; transition: all 0.2s;
-}
-.logout-btn:hover { background: rgba(255,68,68,0.2); }
-
-/* ─── CONTENT ─── */
-.content { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
-
-.page-header { text-align: center; margin-bottom: 48px; }
-.page-header h2 {
-  font-size: 32px; font-weight: 800;
-  background: linear-gradient(90deg, var(--accent), #7df9ff);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  margin-bottom: 8px;
-}
-.page-header p { color: var(--muted); font-size: 15px; }
-
-/* ─── PROVIDER SELECTOR ─── */
-.section-label {
-  color: var(--muted); font-size: 11px; font-weight: 700;
+/* ─── SECTION LABEL ─── */
+.sec-label {
+  display: block;
+  color: #3a6050;
+  font-size: 11px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 1.5px;
   margin-bottom: 10px;
 }
 
+/* ─── PROVIDERS ─── */
 .providers {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 10px; margin-bottom: 24px;
-}
-
-.prov-btn {
-  padding: 13px 8px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: var(--muted); font-family: var(--font); font-size: 13px; font-weight: 700;
-  cursor: pointer; transition: all 0.2s; text-align: center;
-}
-
-.prov-btn.active {
-  background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,136,204,0.1));
-  border-color: rgba(0,212,255,0.5);
-  color: var(--accent);
-  box-shadow: 0 4px 15px rgba(0,212,255,0.15);
-}
-
-/* ─── SEARCH BOX ─── */
-.search-wrap {
-  display: flex; gap: 12px; margin-bottom: 12px;
-}
-
-.search-input {
-  flex: 1; padding: 15px 18px;
-  background: rgba(0,0,0,0.5);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: var(--text); font-family: var(--mono); font-size: 15px;
-  direction: ltr; outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.search-input:focus {
-  border-color: rgba(0,212,255,0.5);
-  box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
-}
-.search-input::placeholder { color: var(--muted); }
-
-.search-btn {
-  padding: 15px 28px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  border: none; border-radius: 12px;
-  color: #080c14; font-family: var(--font); font-size: 15px; font-weight: 800;
-  cursor: pointer; white-space: nowrap;
-  transition: all 0.2s;
-  box-shadow: 0 4px 15px rgba(0,212,255,0.3);
-}
-.search-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,212,255,0.4); }
-.search-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-.format-hint {
-  color: var(--muted); font-size: 11px;
-  font-family: var(--mono); direction: ltr; margin-bottom: 28px;
-}
-
-/* ─── LOADING ─── */
-.loading-bar {
-  display: none; text-align: center; padding: 20px;
-  color: var(--accent); font-size: 14px;
-}
-.loading-bar.show { display: flex; align-items: center; justify-content: center; gap: 10px; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.spin { animation: spin 0.8s linear infinite; }
-
-/* ─── AVAILABILITY BADGE ─── */
-.avail-badge {
-  display: none;
-  padding: 16px 24px;
-  border-radius: 12px;
-  text-align: center;
-  font-size: 16px; font-weight: 700;
-  margin-bottom: 24px;
-}
-.avail-badge.available {
-  background: rgba(0,230,118,0.1);
-  border: 1px solid rgba(0,230,118,0.4);
-  color: var(--green);
-}
-.avail-badge.unavailable {
-  background: rgba(255,68,68,0.1);
-  border: 1px solid rgba(255,68,68,0.3);
-  color: var(--red);
-}
-.avail-badge.show { display: block; }
-
-/* ─── RESULTS GRID ─── */
-.results { display: none; }
-.results.show { display: block; }
-
-.results-title {
-  font-size: 13px; font-weight: 700;
-  color: var(--muted); text-transform: uppercase; letter-spacing: 1px;
-  margin-bottom: 16px; padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
-}
-
-.cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 14px;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 26px;
 }
 
-.info-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 20px;
-  transition: border-color 0.2s, transform 0.2s;
-}
-.info-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-2px); }
-
-.card-icon {
-  width: 36px; height: 36px;
-  background: rgba(0,212,255,0.08);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--accent); font-size: 15px;
-  margin-bottom: 14px;
+.provider-btn {
+  padding: 13px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,200,83,0.1);
+  background: rgba(255,255,255,0.02);
+  color: #3a5a6a;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative; overflow: hidden;
 }
 
-.card-label { color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-
-.card-value {
-  font-size: 17px; font-weight: 700; color: var(--text);
-  font-family: var(--mono); word-break: break-all;
+.provider-btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(0,200,83,0.08), transparent);
+  opacity: 0; transition: opacity 0.25s;
 }
 
-.card-value.big { font-size: 28px; color: var(--accent); }
-
-/* Map card special */
-.map-link {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 8px 14px;
-  background: rgba(0,212,255,0.1);
-  border: 1px solid rgba(0,212,255,0.25);
-  border-radius: 8px;
-  color: var(--accent); font-size: 13px; font-weight: 700;
-  text-decoration: none; margin-top: 6px;
-  transition: all 0.2s;
+.provider-btn:hover:not(:disabled)::after { opacity: 1; }
+.provider-btn:hover:not(:disabled) {
+  border-color: rgba(0,200,83,0.3);
+  color: #5ad090;
+  transform: translateY(-1px);
 }
-.map-link:hover { background: rgba(0,212,255,0.2); }
+
+.provider-btn.active {
+  background: linear-gradient(135deg, rgba(0,200,83,0.18), rgba(0,180,70,0.1));
+  border-color: rgba(0,200,83,0.5);
+  color: #69f0ae;
+  box-shadow: 0 4px 20px rgba(0,200,83,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+/* DISABLED - Dawiyat */
+.provider-btn.disabled-prov {
+  opacity: 0.3;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+.provider-btn.disabled-prov::before {
+  content: '🔒';
+  font-size: 10px;
+  position: absolute; top: 4px; left: 6px;
+}
+
+/* ─── INPUT ─── */
+.input-wrap { margin-bottom: 10px; }
+
+.odb-input {
+  width: 100%;
+  padding: 15px 18px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(0,200,83,0.15);
+  border-radius: 13px;
+  color: #b0d8c0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  direction: ltr;
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+}
+.odb-input:focus {
+  border-color: rgba(0,200,83,0.5);
+  background: rgba(0,0,0,0.7);
+  box-shadow: 0 0 0 3px rgba(0,200,83,0.07), 0 0 20px rgba(0,200,83,0.05);
+}
+.odb-input::placeholder { color: #1a3a2a; }
+
+.mask-hint {
+  margin-top: 6px; margin-bottom: 22px;
+  font-size: 11px; color: #1e4030;
+  font-family: 'JetBrains Mono', monospace;
+  direction: ltr;
+  transition: color 0.2s;
+}
+
+/* ─── BUTTON ─── */
+.check-btn {
+  width: 100%; padding: 17px;
+  border-radius: 13px; border: none;
+  background: linear-gradient(135deg, #00c853, #00a040);
+  color: #fff;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 17px; font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(0,200,83,0.35);
+  transition: all 0.25s;
+  position: relative; overflow: hidden;
+  letter-spacing: 0.5px;
+}
+.check-btn::before {
+  content: '';
+  position: absolute; top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  transition: left 0.5s;
+}
+.check-btn:hover::before { left: 100%; }
+.check-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,200,83,0.45); }
+.check-btn:active { transform: translateY(0); }
+.check-btn:disabled {
+  background: rgba(0,200,83,0.15);
+  color: #1a4a2a;
+  box-shadow: none; cursor: not-allowed; transform: none;
+}
+
+/* ─── RESULT ─── */
+.result {
+  margin-top: 22px;
+  padding: 26px;
+  border-radius: 16px;
+  text-align: center;
+  display: none;
+  animation: resultIn 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes resultIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.result.available {
+  background: linear-gradient(135deg, rgba(0,200,83,0.1), rgba(0,200,83,0.05));
+  border: 1px solid rgba(0,200,83,0.35);
+  box-shadow: 0 0 30px rgba(0,200,83,0.08);
+}
+.result.unavailable {
+  background: linear-gradient(135deg, rgba(255,50,50,0.1), rgba(255,50,50,0.04));
+  border: 1px solid rgba(255,50,50,0.3);
+  box-shadow: 0 0 30px rgba(255,50,50,0.06);
+}
+
+.result-emoji { font-size: 52px; margin-bottom: 12px; display: block; }
+
+.result-text { font-size: 21px; font-weight: 800; margin-bottom: 8px; }
+.result.available  .result-text { color: #69f0ae; }
+.result.unavailable .result-text { color: #ff6b6b; }
+
+.result-odb {
+  color: #2a5040;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  direction: ltr;
+}
 
 /* ─── DIVIDER ─── */
 .divider {
   border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
+  border-top: 1px solid rgba(0,200,83,0.08);
+  margin: 28px 0;
 }
 
-/* ─── ERROR ─── */
-.error-msg {
-  display: none; padding: 14px 18px;
-  background: rgba(255,68,68,0.08);
-  border: 1px solid rgba(255,68,68,0.25);
-  border-radius: 10px;
-  color: #ff8080; font-size: 14px; margin-bottom: 20px;
+/* ─── LOCATION BUTTON ─── */
+.location-btn {
+  display: flex;
+  align-items: center; justify-content: center;
+  gap: 10px;
+  width: 100%; padding: 15px;
+  border-radius: 13px;
+  border: 1px solid rgba(0,150,255,0.2);
+  background: rgba(0,150,255,0.05);
+  color: #60b0e0;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s;
+  position: relative; overflow: hidden;
 }
-.error-msg.show { display: block; }
+.location-btn::before {
+  content: '';
+  position: absolute; top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0,150,255,0.08), transparent);
+  transition: left 0.5s;
+}
+.location-btn:hover::before { left: 100%; }
+.location-btn:hover {
+  border-color: rgba(0,150,255,0.45);
+  background: rgba(0,150,255,0.1);
+  color: #80d0ff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0,150,255,0.15);
+}
+.location-btn .pin-icon { font-size: 18px; animation: pinBounce 2s ease-in-out infinite; }
+@keyframes pinBounce {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-4px); }
+}
 
-/* ─── FOOTER ─── */
-.footer {
-  text-align: center; padding: 24px;
-  color: var(--muted); font-size: 12px;
-  border-top: 1px solid var(--border);
-  margin-top: 60px;
-}
+/* ─── SPINNER ─── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { display: inline-block; animation: spin 0.7s linear infinite; margin-left: 6px; }
 
 /* ─── MOBILE ─── */
-@media (max-width: 600px) {
-  .topbar { padding: 14px 16px; }
-  .content { padding: 24px 16px; }
-  .providers { grid-template-columns: repeat(2, 1fr); }
-  .search-wrap { flex-direction: column; }
-  .login-card { padding: 32px 24px; }
-  .cards-grid { grid-template-columns: 1fr 1fr; }
+@media (max-width: 480px) {
+  .card { padding: 28px 20px; }
+  .header h1 { font-size: 18px; }
 }
 </style>
 </head>
 <body>
 
-<div class="glow-orb glow-1"></div>
-<div class="glow-orb glow-2"></div>
+<div class="bg-grid"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="particles" id="particles"></div>
 
-<!-- ══════════════════ LOGIN PAGE ══════════════════ -->
-<div id="loginPage">
-  <div class="login-card">
-    <div class="login-logo">
-      <div class="icon-wrap">🌐</div>
-      <h1>FIBER · XP</h1>
-      <p>ODB Explorer — النظام المتكامل</p>
-    </div>
+<div class="card">
 
-    <div class="field">
-      <label>اسم المستخدم</label>
-      <input type="text" id="loginUser" placeholder="username" autocomplete="username">
-    </div>
-    <div class="field">
-      <label>كلمة المرور</label>
-      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
-    </div>
-    <div id="loginError" class="login-error"></div>
-    <button class="login-btn" onclick="doLogin()">
-      <i class="fas fa-sign-in-alt"></i> دخول
-    </button>
-  </div>
-</div>
-
-<!-- ══════════════════ MAIN APP ══════════════════ -->
-<div id="mainApp">
-
-  <!-- Topbar -->
-  <div class="topbar">
-    <div class="topbar-logo">
-      🌐 FIBER·XP
-      <span>ODB Explorer</span>
-    </div>
-    <div class="topbar-user">
-      <div class="user-badge" id="userBadge">—</div>
-      <button class="logout-btn" onclick="doLogout()">
-        <i class="fas fa-sign-out-alt"></i> خروج
-      </button>
-    </div>
+  <div class="header">
+    <div class="logo-wrap">🌐</div>
+    <h1>FIBER · XP</h1>
+    <p>ODB Availability Checker</p>
   </div>
 
-  <!-- Content -->
-  <div class="content">
+  <span class="sec-label">اختر المزود</span>
+  <div class="providers" id="providers"></div>
 
-    <div class="page-header">
-      <h2>🔍 البحث عن لوحة الألياف</h2>
-      <p>أدخل رقم البوكس ODB للحصول على بيانات التغطية والموقع فوراً</p>
-    </div>
+  <span class="sec-label">رقم البوكس</span>
+  <div class="input-wrap">
+    <input class="odb-input" type="text" id="odbInput" placeholder="أدخل رقم ODB..."
+      onkeydown="if(event.key==='Enter') checkAvailability()">
+  </div>
+  <div class="mask-hint" id="maskHint"></div>
 
-    <!-- Provider -->
-    <div class="section-label">اختر المزود</div>
-    <div class="providers" id="providerBtns"></div>
+  <button class="check-btn" onclick="checkAvailability()" id="checkBtn">
+    🔍 فحص التوفر
+  </button>
 
-    <!-- Search -->
-    <div class="section-label">رقم البوكس</div>
-    <div class="search-wrap">
-      <input class="search-input" id="odbInput" placeholder="أدخل رقم ODB..." dir="ltr"
-        onkeydown="if(event.key==='Enter') doSearch()">
-      <button class="search-btn" id="searchBtn" onclick="doSearch()">
-        <i class="fas fa-search"></i> بحث
-      </button>
-    </div>
-    <div class="format-hint" id="fmtHint"></div>
-
-    <!-- Loading -->
-    <div class="loading-bar" id="loading">
-      <i class="fas fa-circle-notch spin"></i>
-      <span>جاري البحث في قاعدة البيانات...</span>
-    </div>
-
-    <!-- Error -->
-    <div class="error-msg" id="errorMsg"></div>
-
-    <!-- Availability -->
-    <div class="avail-badge" id="availBadge"></div>
-
-    <!-- Results -->
-    <div class="results" id="resultsSection">
-      <div class="results-title"><i class="fas fa-database"></i> بيانات اللوحة</div>
-      <div class="cards-grid">
-
-        <div class="info-card">
-          <div class="card-icon"><i class="fas fa-tag"></i></div>
-          <div class="card-label">اسم البوكس</div>
-          <div class="card-value" id="rName">—</div>
-        </div>
-
-        <div class="info-card">
-          <div class="card-icon"><i class="fas fa-network-wired"></i></div>
-          <div class="card-label">عدد المنافذ</div>
-          <div class="card-value big" id="rPorts">—</div>
-        </div>
-
-        <div class="info-card">
-          <div class="card-icon"><i class="fas fa-map-marker-alt"></i></div>
-          <div class="card-label">المنطقة</div>
-          <div class="card-value" id="rRegion">—</div>
-        </div>
-
-        <div class="info-card">
-          <div class="card-icon"><i class="fas fa-building"></i></div>
-          <div class="card-label">مزود البنية التحتية</div>
-          <div class="card-value" id="rVendor">—</div>
-        </div>
-
-        <div class="info-card">
-          <div class="card-icon"><i class="fas fa-crosshairs"></i></div>
-          <div class="card-label">الإحداثيات</div>
-          <div class="card-value" id="rCoords" style="font-size:13px;">—</div>
-          <a id="rMapLink" href="#" target="_blank" class="map-link" style="display:none;">
-            <i class="fas fa-map-marked-alt"></i> عرض على الخريطة
-          </a>
-        </div>
-
-        <div class="info-card">
-          <div class="card-icon"><i class="fas fa-tachometer-alt"></i></div>
-          <div class="card-label">السرعة المتاحة</div>
-          <div class="card-value big" style="color:var(--green);">1G</div>
-          <div style="color:var(--muted);font-size:11px;margin-top:4px;">ألياف بصرية FTTH</div>
-        </div>
-
-      </div>
-    </div>
-
+  <div class="result" id="result">
+    <span class="result-emoji" id="resultEmoji"></span>
+    <div class="result-text"  id="resultText"></div>
+    <div class="result-odb"   id="resultOdb"></div>
   </div>
 
-  <div class="footer">
-    FIBER·XP &nbsp;·&nbsp; ODB Explorer &nbsp;·&nbsp; 2025
-  </div>
+  <hr class="divider">
+
+  <a href="" class="location-btn" id="locationBtn">
+    <span class="pin-icon">📍</span>
+    اضغط هنا لمعرفة مكان البوكس
+  </a>
 
 </div>
 
 <script>
-// ══════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════
-const PROXY_VALIDATE = "https://fiber-proxy.vercel.app/api/check";
-const PROXY_LOOKUP   = "https://location.sa.zain.com/lookup/odb";
-
-const USERS = {
-  "admin":    "admin",
-  "Kapo":     "123123123",
-  "manga":    "123123123",
-  "Abdo1994": "0567014549",
-  "AlFursan": "123123123",
-  "sadek":    "123123123",
-  "3rgany":   "123123123",
-  "taleb":    "123123123",
-  "3asem":    "123123123",
-  "omarxx":   "123123123",
-};
+const PROXY_URL = "https://fiber-proxy.vercel.app/api/check";
+const PRODUCT_ID = "15005001";
 
 const PROVIDERS = [
-  { name: "STC",        id: "9169265135613600146", mask: "XXXXXXXXXXX",           placeholder: "AZEZDNU3688" },
-  { name: "Dawiyat",    id: "9169265133613600146", mask: "XXXXXXXXXXX",           placeholder: "ODB:XXXXXXXX", prefix: "ODB:" },
-  { name: "Mobily",     id: "9169272440013609990", mask: "XXX-XXXX-XXXX-XX-XXXX", placeholder: "RUH-SULM-SULM-17-3835" },
-  { name: "TLS Salam",  id: "9169272442013609990", mask: "XXXXXXXXXXX",           placeholder: "XXXXXXXXXXX" },
+  { name: "STC",        id: "9169265135613600146", mask: "XXXXXXXXXXX",           placeholder: "AZEZDNU3688",         prefix: "",     disabled: false },
+  { name: "Dawiyat",    id: "9169265133613600146", mask: "XXXXXXXXXXX",           placeholder: "غير متاح حالياً",     prefix: "ODB:", disabled: true  },
+  { name: "Mobily",     id: "9169272440013609990", mask: "XXX-XXXX-XXXX-XX-XXXX", placeholder: "RUH-SULM-SULM-17-3835", prefix: "",   disabled: false },
+  { name: "TLS [Salam]",id: "9169272442013609990", mask: "XXXXXXXXXXX",           placeholder: "XXXXXXXXXXX",         prefix: "",     disabled: false },
 ];
 
-const PRODUCT_ID = "15005001";
-let activeProvider = PROVIDERS[0];
+let selectedProvider = PROVIDERS[0];
 
-// ══════════════════════════════════════
-// LOGIN
-// ══════════════════════════════════════
-function doLogin() {
-  const u = document.getElementById("loginUser").value.trim();
-  const p = document.getElementById("loginPass").value.trim();
-  const errEl = document.getElementById("loginError");
-
-  if (USERS[u] && USERS[u] === p) {
-    errEl.textContent = "";
-    document.getElementById("loginPage").classList.add("hide");
-    document.getElementById("mainApp").classList.add("show");
-    document.getElementById("userBadge").textContent = u;
-    setTimeout(() => document.getElementById("loginPage").style.display = "none", 500);
-  } else {
-    errEl.textContent = "❌ اسم المستخدم أو كلمة المرور غير صحيحة";
-    errEl.style.animation = "none";
-    requestAnimationFrame(() => errEl.style.animation = "shake 0.4s ease-in-out");
-  }
-}
-
-document.getElementById("loginPass").addEventListener("keydown", e => {
-  if (e.key === "Enter") doLogin();
-});
-
-function doLogout() {
-  document.getElementById("mainApp").classList.remove("show");
-  document.getElementById("loginPage").style.display = "flex";
-  document.getElementById("loginPage").classList.remove("hide");
-  document.getElementById("loginUser").value = "";
-  document.getElementById("loginPass").value = "";
-  resetResults();
-}
-
-// ══════════════════════════════════════
-// PROVIDERS
-// ══════════════════════════════════════
-const provWrap = document.getElementById("providerBtns");
+// ── Build provider buttons ──
+const container = document.getElementById("providers");
 PROVIDERS.forEach((p, i) => {
   const btn = document.createElement("button");
-  btn.className = "prov-btn" + (i === 0 ? " active" : "");
+  btn.className = "provider-btn"
+    + (i === 0 ? " active" : "")
+    + (p.disabled ? " disabled-prov" : "");
   btn.textContent = p.name;
-  btn.onclick = () => {
-    document.querySelectorAll(".prov-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    activeProvider = p;
-    document.getElementById("odbInput").placeholder = p.placeholder;
-    document.getElementById("fmtHint").textContent = "Format: " + p.mask;
-    resetResults();
-  };
-  provWrap.appendChild(btn);
-});
-document.getElementById("fmtHint").textContent = "Format: " + PROVIDERS[0].mask;
-document.getElementById("odbInput").placeholder = PROVIDERS[0].placeholder;
+  btn.disabled = p.disabled;
 
-// ══════════════════════════════════════
-// SEARCH
-// ══════════════════════════════════════
-async function doSearch() {
+  if (!p.disabled) {
+    btn.onclick = () => {
+      document.querySelectorAll(".provider-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedProvider = p;
+      document.getElementById("odbInput").placeholder = p.placeholder;
+      document.getElementById("maskHint").textContent = "Format: " + p.mask;
+      clearResult();
+    };
+  }
+  container.appendChild(btn);
+});
+
+// Init hint
+document.getElementById("maskHint").textContent = "Format: " + PROVIDERS[0].mask;
+
+// ── Check ──
+async function checkAvailability() {
   const odbRaw = document.getElementById("odbInput").value.trim();
   if (!odbRaw) return;
 
-  resetResults();
-  setLoading(true);
+  const btn = document.getElementById("checkBtn");
+  btn.disabled = true;
+  btn.innerHTML = 'جاري الفحص... <span class="spinner">⟳</span>';
+  clearResult();
 
-  const odbId = activeProvider.prefix
-    ? (odbRaw.startsWith(activeProvider.prefix) ? odbRaw : activeProvider.prefix + odbRaw)
+  const odbId = selectedProvider.prefix
+    ? (odbRaw.startsWith(selectedProvider.prefix) ? odbRaw : selectedProvider.prefix + odbRaw)
     : odbRaw;
 
   try {
-    // Run both requests in parallel
-    const [validateRes, lookupRes] = await Promise.allSettled([
-      fetch(PROXY_VALIDATE, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ providerId: activeProvider.id, odbId, productId: PRODUCT_ID })
-      }).then(r => r.json()),
-
-      fetch(`${PROXY_LOOKUP}?odbname=${encodeURIComponent(odbRaw)}`)
-        .then(r => r.json())
-    ]);
-
-    setLoading(false);
-
-    // ── Availability
-    if (validateRes.status === "fulfilled") {
-      showAvailability(validateRes.value.valid, odbId);
-    }
-
-    // ── Details
-    if (lookupRes.status === "fulfilled") {
-      const data = lookupRes.value;
-      const d = Array.isArray(data) ? data[0] : data;
-      if (d) showDetails(d);
-    }
-
-  } catch (err) {
-    setLoading(false);
-    showError("حدث خطأ أثناء الاتصال. تأكد من صحة رقم البوكس.");
-  }
-}
-
-// ══════════════════════════════════════
-// UI HELPERS
-// ══════════════════════════════════════
-function setLoading(on) {
-  document.getElementById("loading").classList.toggle("show", on);
-  document.getElementById("searchBtn").disabled = on;
-}
-
-function showAvailability(valid, odbId) {
-  const el = document.getElementById("availBadge");
-  el.className = "avail-badge show " + (valid ? "available" : "unavailable");
-  el.innerHTML = valid
-    ? `<i class="fas fa-check-circle"></i> البوكس متاح — يوجد منفذ فارغ ✅`
-    : `<i class="fas fa-times-circle"></i> البوكس ممتلئ — لا يوجد منفذ ❌`;
-}
-
-function showDetails(d) {
-  document.getElementById("rName").textContent    = d.name    || "—";
-  document.getElementById("rPorts").textContent   = d.ports !== null ? d.ports : "—";
-  document.getElementById("rRegion").textContent  = d.region  || "—";
-  document.getElementById("rVendor").textContent  = d.vendor  || "—";
-
-  if (d.latitude && d.longitude) {
-    const lat = parseFloat(d.latitude).toFixed(5);
-    const lon = parseFloat(d.longitude).toFixed(5);
-    document.getElementById("rCoords").textContent = `${lat}, ${lon}`;
-    const link = document.getElementById("rMapLink");
-    link.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
-    link.style.display = "inline-flex";
+    const res  = await fetch(PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ providerId: selectedProvider.id, odbId, productId: PRODUCT_ID })
+    });
+    const data = await res.json();
+    showResult(data.valid, odbId);
+  } catch {
+    showResult(null, odbId);
   }
 
-  document.getElementById("resultsSection").classList.add("show");
+  btn.disabled = false;
+  btn.innerHTML = "🔍 فحص التوفر";
 }
 
-function showError(msg) {
-  const el = document.getElementById("errorMsg");
-  el.textContent = msg;
-  el.classList.add("show");
+function showResult(valid, odbId) {
+  const box = document.getElementById("result");
+
+  if (valid === null) {
+    box.className = "result unavailable";
+    box.style.display = "block";
+    document.getElementById("resultEmoji").textContent = "⚠️";
+    document.getElementById("resultText").textContent  = "تعذّر الاتصال، حاول مجدداً";
+    document.getElementById("resultOdb").textContent   = "";
+    return;
+  }
+
+  box.className = "result " + (valid ? "available" : "unavailable");
+  box.style.display = "block";
+  document.getElementById("resultEmoji").textContent = valid ? "✅" : "❌";
+  document.getElementById("resultText").textContent  = valid
+    ? "البوكس متاح — يوجد منفذ فارغ"
+    : "البوكس ممتلئ — لا يوجد منفذ";
+  document.getElementById("resultOdb").textContent   = odbId + " · " + selectedProvider.name;
 }
 
-function resetResults() {
-  document.getElementById("availBadge").className = "avail-badge";
-  document.getElementById("resultsSection").classList.remove("show");
-  document.getElementById("errorMsg").classList.remove("show");
+function clearResult() {
+  const box = document.getElementById("result");
+  box.style.display = "none";
+  box.className = "result";
+}
+
+// ── Particles ──
+const pWrap = document.getElementById("particles");
+for (let i = 0; i < 18; i++) {
+  const p = document.createElement("div");
+  p.className = "particle";
+  p.style.left = Math.random() * 100 + "vw";
+  p.style.animationDuration = (8 + Math.random() * 12) + "s";
+  p.style.animationDelay    = (Math.random() * 15) + "s";
+  p.style.width = p.style.height = (Math.random() > 0.5 ? "2px" : "3px");
+  p.style.opacity = 0.3 + Math.random() * 0.4;
+  pWrap.appendChild(p);
 }
 </script>
 </body>
